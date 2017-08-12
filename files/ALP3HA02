@@ -1,0 +1,32 @@
+
+
+
+Aufgabe 1
+a)
+Ist f(n) ∈ O(g(n)) und h(n) ∈ Ω(g(n)), dann ist f(n) ∈ O(h(n)).
+
+O(g(n))={f(n)|∃c>0∃n0 ∀n≥n0 f(n)≤c·g(n)}
+
+Ω(g(n))={h(n)|∃c>0∃n0 ∀n≥n0 c·g(n)≤h(n)}
+
+Wenn f(n)≤c·g(n) und c·g(n)≤h(n) gilt, dann gilt nach den aufgeführten Definitionen aus dem Skript(Seiten 8-9) auch f(n)≤h(n) und somit f(n) ∈ O(h(n)).
+
+
+b)
+Ist f1(n) ∈ O(g1(n)) und f2(n) ∈ O(g2(n)), dann ist f1(n)+f2(n) ∈ O(max(g1(n), g2(n)).
+
+Es gilt:
+f1(n) ≤ c1g1(n) und f2(n) ≤ c2g2(n)
+
+Somit gilt auch:
+f1(n) + f2(n) ≤ c1g1(n) + c2g2(n)
+
+das bedeutet:
+f1(n) + f2(n) ≤ c1 max(g1(n), g2(n)) + c2 max(g1(n), g2(n))
+
+daraus lässt sich folgern:
+f1(n) + f2(n) ≤ (c1 + c2) max(g1(n), g2(n))
+
+Somit ist das Folgende bewiesen:
+f1(n)+f2(n) ∈ O(max(g1(n), g2(n))
+

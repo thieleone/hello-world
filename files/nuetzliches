@@ -1,0 +1,12 @@
+CMD + D alle Variablen, Funktionen etc mit dem gleichen Namen aendern
+
+void free(char* p){
+	Block *b=(Block*)(p-sizeof(Block))
+	b->used=0
+}
+
+
+
+
+
+1 1

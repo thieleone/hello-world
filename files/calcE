@@ -1,0 +1,14 @@
+ggT(a,b)
+	if b==0
+		return (a)
+	else:
+		return (ggT(b,a mod b))
+
+calcE(u,v,|G|)
+	counter=0
+	for 0<i<|G|
+		for i<j<|G|+1
+			if ggT(i,j)==1
+				counter+=1
+				if i==u and j==v
+					return counter

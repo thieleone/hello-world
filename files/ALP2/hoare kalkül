@@ -1,0 +1,30 @@
+hoare kalkül
+
+{P}		^ null Axiom Konsequenzregel
+{R1}	|	^ Zuweisungsaxiom
+counter=1	|
+{R2}		|	^ Zuweisungsaxiom
+power=b 		|
+{INV}			|			-{INV ^ NOT B}	^ Konsequenzregel
+							 {Q}			|
+while counter<a
+	{INV^B}	^ Sequenzregel
+	{R3}	|
+	s 		|
+	{INV}	|
+
+
+
+
+
+{INV} while B, S {INV}
+______________________
+{INV} while B, S {INV ^ NOT B}
+
+{R1} s1 {R2}, {R2} s2 {R3}
+__________________________
+{R1} s1, s2 {R3}
+
+
+
+Entwurfsmuster

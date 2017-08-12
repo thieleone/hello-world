@@ -1,0 +1,95 @@
+ToDo
+
+UNFOLD und FOLD unbedingt bis zur Klausur verstehen
+
+4.Aufgabe Zettel 18 fuer Klausur
+
+
+Aufgabe 4 zum Donnerstag, 06.08.2015
+
+
+f.g (x) zuerst f(x) dann g(x)
+
+
+BSP:
+f xs = Map (+1) (map (^2) xs)
+
+xs = [1,2,3,4] -> [1,3,9,16] -> [2,5,10,17]
+
+f xs = (map (+1).map (^2)) xs
+
+f x y z = ((x + y) + z) = $ (x + (y + z))
+
+
+
+
+
+qsort [] = []
+qsort [x] = [x]
+qsort (x:xs) = quicksort (filter (<x) xs) ++ [x] ++ quicksort (filter (>=x) xs)
+
+qsort1 :: Ord a => [a] -> [a]
+qsort1 []     = []
+qsort1 (p:xs) = qsort1 lesser ++ [p] ++ qsort1 greater
+    where
+        lesser  = [ y | y <- xs, y < p ]
+        greater = [ y | y <- xs, y >= p ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Aufgabe 3 robuste Lsg
+Aufgabe 8 und 9
+
+
+Listen
+[] leer
+
+
+[5,8,11]
+entspricht
+5:[8,11] Element der Liste(Kopf):Restliste
+entspricht
+5:8:11:[]
+entspricht
+5:(8:(11:[])), da rechtsassoziativ
+
+
+[] keine Ele
+[x] genau ein Ele
+(x:xs) min ein Ele (Kopf : Restliste, die leer sein kann)
+(a:b:c:d:rest) min vier Ele
+
+
+----------
+
+contains bis DO 12 Uhr
+
+Aufgabe 8 und 9 des neuen Uebungszettels
+
+-----
+zu Di 2807
+
+Aufgabe 4,5,6,7
+bei 6, min = kleinstes Element der Liste
+
+Aufgabe 1 Ideen sammeln
+
+
+DBC - Design By Contract
+Man kann bestimmte Eingabewerte erwarten.

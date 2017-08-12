@@ -1,0 +1,43 @@
+ALP4
+alexander.kauer@fu-berlin.de
+
+Algorithmus Eingabe -> Ausgabe
+bei Webserver und Co. spricht man von reaktiven Systemen
+
+
+
+Prozess
+-auch schwergewichtige Prozesse genannt
+-abgeschotteter Speicherraum
+-enthaelt in der Regel mehrere Threads, die im selben Speicherraum agieren
+
+Thread
+-auch leichtgewichtige Prozesse genannt
+-kleiner Programmabschnitt, der mit anderen Threads auf einem gemeinsamen Speicherraum arbeiten
+
+Programme
+-koennen mehrere Prozesse enthalten
+
+
+Kernel-Threads
+
+
+atomare Instruktion
+-unteilbare Instruktion, muss in einem Stueck ausgefuehrt werden
+
+
+
+out-of-order execution
+
+memory fences
+-sorgen dafuer, das gewissen Programmsegmente durch die CPU nicht umsortiert werden
+-dadurch wird Korrektheit gewaehrleistet
+
+
+Algorithmus von Peterson
+
+
+Aufgabe 7.)
+Threads erzeugen, die getrennt gambeln
+kein gemeinsamer "Geldtop", keine Synchonisation noetig
+

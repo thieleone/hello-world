@@ -1,0 +1,33 @@
+a) Klassenmethoden können verwendet werden, ohne ein Objekt zu erzeugen
+wenn kein Attribut übergeben wird
+wenn die Objekte der Klasse keine Attribute haben
+NAchteil: eingeschränkte Flexibilität
+
+b)Es macht keinen Sinn sie als private zu deklarieren, da sie lediglich innerhalb der Klasse existieren.
+Klassenmethoden als private zu deklarieren ist moeglich und sinnvoll, wenn die Methode nur innerhalb der Klasse bzw. einer anderen Methode der Klasse aufgerufen werden soll.
+
+c)Es wird automatisch ein Standardkonstruktor verwendet.
+Konstruktoren können vererbt werden.
+
+d) Auf als protected deklarierte Instanzvariablen können Subklassen und Klassen, die im gleichen package definiert sind, zugreifen.
+Konstruktoren können als protected deklariert werden.
+
+e)Abstrakte Klassen dienen als Vorlage zum Vererben. Ihre Variablen können nicht deklariert werden.
+
+f)Es können keine Objekte einer abstrakten Klasse erzeugt werden.
+Konstruktoren können definiert werden.
+
+g)Nein, da B eine Spezialisierung von A ist.
+
+h)Sofern sie nicht als FINAL deklariert wurden.
+
+i)Primitive Datentypen werden in Referenztypen verpackt bzw. entpackt.
+Es wird bereitgestellt, da sonst bestimmte Zuweisungen nicht möglich wären.
+Es kann zu "falschen" Ergebnissen bei Vergleichsoperationen kommen.
+
+j)Generische Klassen besitzen bei der Implementierung unbekannte Typen, die erst bei der Verwendung konkret werden.
+
+k)Die Möglichkeit der Unterklassen, Methoden der Oberklassen zu überschreiben.
+
+l)Ein Ausnahmefehler kann während der Ausführung eines Programms auftreten und stört dessen Ablauf.
+Runtime-Exceptions müssen im Gegensatz zu normalen Exceptions nicht in einer throws-Klausel deklariert werden und sind vermeidbar, wenn entsprechen programmiert wird.

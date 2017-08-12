@@ -1,0 +1,29 @@
+
+
+Aufgabe 1
+a)
+Im Workspace liegt nun ein Ordner mit dem Namen Geometrie. Der Ordner enthält die Unterordner bin und src, die beide gegenwärtig leer sind.
+
+b)sowohl im Ordner bin als auch im Ordner src befindet sich jeweils ein Ordner mit dem Namen proinf. Beide enthalten den leeren Ordner geo.
+
+
+Aufgabe 2)
+Eingabe: 
+array (a1,a2,a3,...,ai) mit a1<=a2<=ai
+
+Ausgabe:
+an elem array oder -b mit b elem (0,1,2,...,len(array))
+
+Pseudocode:
+binsearch(array,target,start,end)
+	if end < start:
+		return -start
+	mid = (start + end)/2
+	if array[mid] == target:
+		return mid
+	else if array[mid] < target:
+		return binsearch(array,target,mid+1,end)
+	else:
+		return binsearch(array,target,start,mid-1)
+
+

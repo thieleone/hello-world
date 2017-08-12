@@ -1,0 +1,32 @@
+data Zahl = Pinkes Zahl | Seepferdchen deriving Show
+addi::Zahl -> Zahl -> Zahl
+addi Seepferdchen y = y
+addi (Pinkes x) y = Pinkes (addi x y)
+
+addi ( Pinkes (Pinkes Seepferdchen)) (Pinkes Seepferdchen)
+=> Pinkes (addi (Pinkes Seepferdchen) (Pinkes Seepferdchen))
+=> Pinkes (Pinkes (addi Seepferdchen (Pinkes Seepferdchen)))
+=> Pinkes (Pinkes (Pinkes Seepferdchen))
+
+multi::Zahl -> Zahl -> Zahl
+multi Seepferdchen y = Seepferdchen
+multi (Pinkes x) y = addi (multi x y) y
+--     (x+1) 	*y =          (x*y) + y
+
+multi (Pinkes (Pinkes Seepferdchen)) (Pinkes Seepferdchen)
+=> addi (multi (Pinkes Seepferdchen) (Pinkes Seepferdchen)) (Pinkes Seepferdchen)
+=> addi (addi (multi Seepferdchen ( Pinkes Seepferdchen)) (Pinkes Seepferdchen)) (Pinkes Seepferdchen)
+
+
+class Rechnen a where
+	addition::a->a->a
+	multiplikation::a->a->a
+
+data Zahl = Pinkes Zahl | Seepferdchen deriving (Show,Rechnen)
+
+instance Rechnen Zahl where
+	addition Seepferdchen y = y
+	addition (Pinkes x) y = Pinkes (addition x y)
+
+	multiplikation Seepferdchen y = Seepferdchen
+	multiplikation (Pinkes x) y = addition (multi x y) y
