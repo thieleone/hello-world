@@ -1,0 +1,85 @@
+\documentclass[numbers=noendperiod]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage[kpsewhich]{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{enumerate}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 4. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Fr 12:00-14:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+\section*{1. Aufgabe}
+
+\inputmintedframed{java}{src/Gambler.java}
+
+In der Simulation muss bezüglich des Geldes die Invariante gelten, dass die Summe des Geldes aller Teilnehmer (inklusive Casino-Bank) zu allen Zeitpunkten konstant sein muss. Um die Implementierung der Simulation einfacher zu gestalten, übernimmt immer der letzte aktive Spieler, der tippt, die Rolle der Bank.
+
+
+\section*{2. Aufgabe}
+
+Zur Umsetzung dieser Aufgbabe haben wir 3 Klassen benutzt. Eine Klasse \textit{Kita}, welche \textit{Thread} extended und zwei Klassen \textit{Eltern} und \textit{Betreuer}, welche \textit{Kita} extenden. In der main-Methode werden ständig neue Threads abgeleitet von der Klasse \textit{Eltern} oder \textit{Erzieher} mit den zugehörigen Wahrscheinlichkeiten von $\frac{3}{4}$, bzw. $\frac{1}{4}$ erzeugt. Die Threads haben dabei natürlich Lebenszyklen: Eltern fragen, sobald sie antreffen, sofort in der Kita an, ob es einen Platz gibt. Da die Kita die einzige der Stadt ist, müssen die Eltern warten, bis ihre Kinder von der Kita aufgenommen werden. Wenn die Eltern ihre Kinder erfolgreich abgeben können, kriegen sie eine Liste der Erzieher, in deren Obhut die Kinder übergeben wurden und kommen nach einer bestimmten Zeit wieder, um ihre Kinder abzuholen.
+
+Erzieher registrieren sich sofort bei der Kita und erhöhen die Anzahl der verfügbaren Stellen in der Kita um 5, da jede Erzieher 5 Kinder aufnehmen kann. Auch Eltern haben einen Lebenszyklus und machen irgendwann Feierabend. Sie können dies jedoch erst machen, wenn sie ihre Kinder an eine andere Instanz abgegeben haben, d.h. entweder an die Eltern, oder an einen anderen Erzieher. Insbesondere darf eine Erzieher nicht gehen, wenn keine weiteren Erzieher verbleiben, da unsere Kita seltsamerweise immer offen bleiben muss. Ein Erzieher darf aber anmelden, dass er gehen will. In dem Fall nimmt er keine weiteren Kinder auf als die, die er bereits betreut.
+
+\inputmintedframed{java}{src/Kita.java}
+
+\inputmintedframed{java}{src/Eltern.java}
+
+\inputmintedframed{java}{src/Erzieher.java}
+
+
+\section*{3. Aufgabe}
+
+\begin{enumerate}[a)]
+	\item ${}$\\
+	
+	\inputmintedframed{java}{AcrossBridge/src/control/OAATSemaphore.java}
+	
+	\inputmintedframed{java}{AcrossBridge/src/control/OAATReentrant.java}
+	
+	\inputmintedframed{java}{AcrossBridge/src/control/OAATMonitor.java}
+	
+	\item ${}$\\
+	
+	\inputmintedframed{java}{AcrossBridge/src/control/AlternateWE.java}
+	
+	\item ${}$\\
+	
+	\inputmintedframed{java}{AcrossBridge/src/control/FairBC.java}
+	
+\end{enumerate}
+
+
+\end{document}

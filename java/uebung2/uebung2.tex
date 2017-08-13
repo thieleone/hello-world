@@ -1,0 +1,79 @@
+\documentclass[numbers=noendperiod]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{enumerate}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 2. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Fr 12:00-14:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+Alle Zustandsdiagramme sind aus Platzgründen ausgelagert.
+
+\section*{1. Aufgabe}
+Nehmen wir an, die Algorithmen würden nicht den wechselseitigen Ausschluss gewährleisten. Dann würde im Zustandsdiagramm eine verschachtelte Ausführung von $T_p$ und $T_r$ existieren, in welcher der Zustand $(p_5,r_5)$ auftritt. Da das nicht der Fall ist, läuft der Algorithmus also unter Gewährleistung gegenseitigen Auschlusses; beim ersten Algorithmus kann dafür jedoch ein Deadlock auftreten, wenn $r_2$ und $p_2$ unmittelbar nacheinander ausgeführt werden.
+
+\section*{2. Aufgabe}
+
+Auch hier gilt wieder das oben angewendete Argument: Da kein Zustand $(p_6,r_6)$ im Zustandsdiagramm auftaucht, läuft auch hier der Algorithmus unter Gewährleistung gegenseitigen Ausschlusses. Ferner kann kein Deadlock entstehen, denn dann gäbe es im Zustandsdiagramm einen Zustand, der als Nachfolgezustände nur sich selbst hat, aber alle Zustände im Diagramme haben genau zwei Nachfolgezustände.
+
+\section*{3. Aufgabe}
+
+\begin{enumerate}[a)]
+	\item Der Algorithmus gewährleistet den gegenseitigen Ausschluss, da kein Zustand $(p_6,r_6)$ im Zustandsdiagramm existiert und ist ferner verklemmungsfrei, wenn wir schwache Fairness des Schedulers voraussetzen, da jeder Zustand im Diagramm mindestens einen Nachfolgezustand hat, der irgendwann ausgeführt wird.
+	
+	Weiterhin ist klar, dass kein Prozess durch Warten auf den anderen Prozess verhungern kann, sofern der Scheduler schwach fair ist. Denn $T_0$ und $T_1$ warten in $p_4$ und $r_4$ darauf, dass $\lnot \text{ready}[1] \lor \text{turn} = 1$, bzw. $\lnot \text{ready}[0] \lor \text{turn} = 0$. Wegen Symmetrie betrachten wir oBdA $T_0$. Angenommen, $T_0$ befindet sich in $p_4$ und wartet darauf, dass $\lnot \text{ready}[1] \lor \text{turn} = 1$. Wegen des Fortschritts des anderen Prozesses wird irgendwann $r_3$ abgearbeitet und $\text{turn} = 0$. Nehmen wir an, der Scheduler arbeitet als nächstes nicht $p_4$ ab.  Dann muss $T_1$ in $r_4$ warten, bis von $T_0$ $p_5$ oder $p_3$ abgearbeitet wurden. Damit das Programm voranschreitet, muss also irgendwann $p_4$ abgearbeitet werden und die Starvation wird somit (bei der obigen Voraussetzung an den Scheduler) verhindert.
+	
+	\item \begin{enumerate}[(1.)]
+		\item Zu zeigen: $p_4 \land r_5 \Rightarrow \text{ready}[1] \land \text{turn} = 1$.
+		
+		Wir halten zunächst fest, dass $\text{ready}[1] \Leftrightarrow r_{3456}$. Somit gilt $r_5 \Rightarrow \text{ready}[1]$. Nun zeigen wir noch per Fallunterscheidung, dass $p_4 \land r_5 \Rightarrow \text{turn} = 1$.
+		\begin{enumerate}
+			\item[1. Fall:] $p_4$ wird vor $r_5$ erreicht. Dann gilt im letzten Zustand $\lnot \text{ready}[0] \lor \text{turn} = 1$, aber da $\text{ready}[0]$ nur in $p_2$ und $p_6$ modifiziert wird und $p_2$ vor $p_4$ vor $p_6$ ausgeführt wird, gilt $p_4 \Rightarrow \text{ready}[0]$. Also muss stattdessen $\text{turn} = 1 $ gelten.
+			\item[2. Fall] $r_5$ wird vor $p_4$ ausgeführt. Dann erfolgt im letzten Schritt die Zuweisung $\text{turn} = 1$, also gilt im letzten Zustand $\text{turn} = 1$.
+		\end{enumerate}
+		Damit haben wir gerade gezeigt, dass $p_4 \land r_5 \Rightarrow \text{turn} = 1$ und mit $r_5 \Rightarrow \text{ready}[1]$ folgt $p_4 \land r_5 \Rightarrow \text{ready}[1] \land \text{turn} = 1$.
+		
+		\item Zu zeigen: $p_5 \land r_4 \Rightarrow \text{ready}[0] \land \text{turn} = 0$.
+		
+		Der Beweis erfolgt genau symmetrisch. $\text{ready}[0] \Leftrightarrow p_{3456}$. Damit gilt $p_5 \Rightarrow \text{ready}[0]$. Wir zeigen $p_5 \land r_4 \Rightarrow \text{turn} = 0$.
+		\begin{enumerate}
+			\item[1. Fall:] $r_4$ wird vor $p_5$ erreicht. Dann gilt im letzten Zustand $\lnot \text{ready}[1] \lor \text{turn} = 0$, aber da $\text{ready}[1]$ nur in $r_2$ und $r_6$ modifiziert wird und $r_2$ vor $r_4$ vor $r_6$ ausgeführt wird, gilt $r_4 \Rightarrow \text{ready}[1]$. Also muss stattdessen $\text{turn} = 0 $ gelten.
+			\item[2. Fall] $p_5$ wird vor $r_4$ ausgeführt. Dann erfolgt im letzten Schritt die Zuweisung $\text{turn} = 0$, also gilt im letzten Zustand $\text{turn} = 0$.
+		\end{enumerate}
+	\end{enumerate}
+\end{enumerate}
+
+\end{document}

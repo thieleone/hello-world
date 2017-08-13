@@ -1,0 +1,147 @@
+\documentclass[numbers=noendperiod,10pt]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage[kpsewhich]{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{color}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 7. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Fr 12:00-14:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+\section*{1. Aufgabe}
+
+
+\begin{enumerate}[a)]
+	\item \begin{enumerate}
+		\item \textbf{FCFS}: Obwohl alle Prozesses gleichzeitig starten, müssen einige als erstes in die Queue eintreten. Nehmen wir an, der 100ms-Thread steht an der $j$-ten Stelle der FIFO-Queue (beginnt bei 0). Dann gilt:
+		\begin{equation}
+			(t_{exec},t_{wait})_i = \begin{cases}
+				(1,i), &\forall i<j\\
+				(100,j), &i = j\\
+				(1,99+i)
+			\end{cases}
+		\end{equation}
+		
+		Somit ergeben sich die durschnittliche Lauzeit bzw. Wartezeit:
+		\begin{align}
+			\overline{t_{run}} &= \frac{100\cdot 1 + 1 \cdot 100}{101} \approx 1,98\\
+			\overline{t_{wait}} &= \frac{1}{101}\left[j+ \sum_{i=j+1}^{100} 99 + i\right] = \frac{1}{101}\left[j + \sum_{i=1}^{100-j}(99 + j + i)\right]\\
+			& = \frac{1}{101}\left[j + (100-j)(99+j) + \frac{1}{2}(100-j)(101-j)\right]
+		\end{align}
+		
+		Für $j=0$ ergibt sich beispielsweise eine Wartezeit von $\overline{t_{wait}} \approx 148,02$.
+		\item \textbf{SJF}: Da der 100ms-Thread die längste Job ist, kommmt dieser stets als letzter dran und es gilt einfach:
+		\begin{equation}
+			(t_{exec},t_{wait})_i = \begin{cases}
+			(1,i), &i<100\\
+			(100,100), &i=100
+			\end{cases}
+		\end{equation}
+		
+		\begin{align}
+			&\overline{t_{run}} = \frac{100\cdot 1 + 1\cdot 100}{101} \approx 1,98 &&\overline{t_{wait}} = \frac{1}{101}\sum_{i=0}^{100} i = 50
+		\end{align}
+		\item \textbf{SRTF}: Bei einem Quantum von 1min ist SRTF hier äquivalent mit SJF, denn solange 1min-Threads übrig sind, werden diese ausgewählt un in dem zur Verfügung gestellten Quantum vollständig abgearbeitet. Der 100min-Thread wird als letztes augewählt und ohne Unterbrechungen durch weitere Threads bearbeitet.
+		
+		\item \textbf{RR}: Im ersten Durchgang kommen alle Threads in die Warteschlange des RR-Schedulers und es werden alle 1min-Threads bedient, sowie 1min von 100min-Thread. Anschließend befindet sich nur noch 100min-Thread in der Warteschlange des RR-Schedulers und der 100min-Thread läuft ohne weitere Unterbrechungen bis zum Ende.
+		
+		Abhängig davon, welche Position der 100min-Thread einnimmt, ergeben sich unterscheidliche durchschnittliche Ausführungszeiten. Es gilt:
+		\begin{equation}
+			(t_{exec},t_{wait})_i = \begin{cases}
+			(1,i), &i<100\\
+			(99,100), &i=100
+			\end{cases}
+		\end{equation}
+		\begin{align}
+			&\overline{t_{exec}} = \frac{100\cdot 1 + (200-j)}{101} = \frac{300-j}{101} &&\overline{t_{wait}} = \frac{1}{101}\sum_{i=0}^{100}i = 50
+		\end{align}
+		
+	\end{enumerate}
+
+	\item \begin{enumerate}
+		\item \textbf{FCFS}: FCFS eignet sich für Anwendungen, in denen die Threds in der Reihenfolge des Eintreffens abgearbeitet werden müssen oder für die ein Scheduler mit sehr geringem Overhead benötigt wird, weil wenige Rechenressourcen zur Verfügung stehen.
+		
+		\item \textbf{SJF}: SJF sollte am Besten für Anwendungen benutzt werden, bei denen ein hoher Durchsatz erweünscht ist und rechenintensivere Tasks auch auf ruhigere Phasen (in denen weniger Threads bedient werden wollen) verschoben werden können. Diese Eigenschaften wären beispielsweise für viele Serveranwendungen von Vorteil.
+		
+		\item \textbf{SRTF}: Für SRTF gelten die gleichen Überlegungen wie für SJF, da dieser Algorithmus im Gegensatz zu SJF jedoch präemptiv ist, sollte dieser gegenüber SJF für interaktive Anwendungen vorgezogen werden, in denen kein Threads verhungern dürfen.
+		
+		\item \textbf{RR}: RR ist vor allem für Systeme mit interaktiven Anwendungen geeignet, da alle aktiven, wartenden Threads in jedem Zyklus ein Quantum Rechenzeit zugebilligt bekommen, sodass viele Anwendungen gut parallel laufen können. Allerdings eignet sich Round Robin nur für leistungsfähige Systeme, da die hohe Anzahl von Kontextwechseln bei ausreichend kleinen Quanta einen sehr hohen Overhead erzeugt.
+	\end{enumerate}
+\end{enumerate}
+
+\section*{2. Aufgabe}
+
+\begin{enumerate}
+	\item \textbf{FCFS}: Sofern jeder Thread eine endliche Ausführungszeit hat und nicht blockieren kann, wird dieser vollständig abgearbeitet sobald er drankommt und es kommt anschließend der nächste Thread in der Queue dran. Somit kann kein Thread verhungern, denn alle Threads in der Queue werden irgendwann bearbeitet. Können Threads jedoch auf unbestimmte Zeit blockieren, so kommen die nachgelegenen Threads in der Queue aber nie dran und verhungern.
+	
+	\item \textbf{SJF}: Threads können verhungern: Wenn ein Thread eine lange Ausführungszeit hat und der Scheduler ständig neue Threads registriert, die kürzere Ausführungszeiten haben, wird der Scheduler immer die kürzeren Threads bevorzugen und der Thread mit der längeren Ausführungszeit kommt nie dran.
+	
+	\item \textbf{RR}: Threads können nicht verhungern: Alle Threads, die noch nicht befriedigt sind, reihen sich in eine Warteschschlange ein. Die Prozesse bekommen nacheinander vom Scheduler ein Quantum Rechenzeit zugebilligt. Falls sie danach befriedigt sind, fallen sie aus der Warteschlange raus, falls nicht, stellen sie sich hinten wieder an und warten wieder auf Rechenzeit. Da Warteschlange zu einem beliebigen Zeitpunkt endlich ist, kommt jeder Thread in der Warteschlange immer irgendwann dran und wird irgendwann vollständig abgearbeitet (sofern er endlich ist).
+	
+	\item \textbf{O(1)}: Threads können nicht verhungern: Threads, die sich in der Liste der aktiven Threads befinden, werden irgendwann bedient (da diese endlich ist) und ein Quantum Rechenzeit zugebilligt. Danach sind sie entweder fertig oder werden, sobald alle Threads der aktiven Liste bedient sind, an die Liste der ausgelaufenen Threads angehängt (in der sich auch neue Prozesse einreihen können). Da alle Threads in der aktiven Liste irgendwann abgearbeitet sind, kommen aber alle Threads von der ausgelaufenen Liste irgendwann in die aktive Liste. Induktiv folgt, dass jeder Thread, der noch nicht abgearbeitet ist, irgendwann bedient wird und damit irgendwann vollständig abgearbeitet wird (sofern er endlich ist).
+	
+	\item \textbf{Hybrid Lottery}: Threads können nicht verhungern in dem Sinne, dass die Wahrscheinlichkeit, dass ein Thread immer ein ungültiges Lotterielos zieht, gegen 0 geht. Allerdings können Threads beliebig lange warten.
+	
+	\item \textbf{Completely Fair Scheduler}: Wie der Name nahelegt können Threads nicht verhungern, denn der Scheduler ist komplett fair. D.h. wenn ein Prozess, der wartet und drankommen kann wird auch irgendwann drankommen und verhungert nicht. Obwohl die konkrete Funktionsweise dieses Schedulers nicht in der Vorlesung behandelt wurde nehmen wir an, dass die wartenden Prozesse immer weiter im R-S-Baum aufsteigen und somit notwendigerweise irgedndwann in die Wurzel kommen und abgearbeitet werden.
+\end{enumerate}
+
+\section*{Aufgabe 3}
+
+Wenn mehrere Threads die gleiche Priorität Laxity haben, gehen wir davon aus, dass immer derjenige mit dem kleinsten Index vom Scheduler bevorzugt wird. Die Grafik ist im Anhang beigefügt.
+
+Anmerkung: Die Tabelle wurde mit den Tests des Programms von Aufgabe 5 überprüft.
+
+\section*{Aufgabe 4}
+
+Gegeben sind zwei Sprachverbindungen, beide haben eine Periode von $p= 5$ms und haben eine Execution Time von $e = 1$ms. Die Videoanwendung läuft mit 25 Bildern pro Sekunde und jedes Bild benötigt 20ms Zeit. Wir gehen davon aus, dass die Bilder in regelmäßigen Zeitabständen geliefert werden müssen, also beträgt die Periode des Programms $p = \frac{1000}{25}\text{ms} = 40$ms und die Execution Time $e = 20$ms. Ferner nehmen wir an, dass die Deadlines der Programme ihren Perioden entsprechen, dass ein Request eines Tasks als bis zum nächsten Request abgearbeitet sein muss. Zusammenfassend:
+\begin{align}
+	&T_{C1} = (0,1,5,5) &&T_{C2} = (0,1,5,5) &&&T_V = (2,20,40,40)
+\end{align}
+
+Die CPU-Auslastung beträgt $\sum_{i} \frac{e_i}{p_i} = \frac{1}{5} + \frac{1}{5} +  \frac{20}{40} = 90\%$, zumindest prinzipiell ist es also möglich, alle Tasks auf einem Livesystem zu bedienen. Tatsächlich können wir auch einen spezifischen Scheduling-Algorithmus angeben, für den alle Tasks bedient werden. Wählen wir beispielsweise  EDF, so ergibt sich in jedem 5ms-Zyklus eine Schachtelung $T_{C1}, T_{C2}, T_V, T_V, T_V$. Offensichtlich werden die $T_{C1}, T_{C2}$ in jedem 5ms-Zyklus bedient und weil $T_V$ 20ms zu absolvieren hat, ist es bereits nach 7 Zyklen, also nach 34ms und somit noch vor Eintreten der eigenen Deadlline, fertig.
+
+\section*{Aufgabe 5}
+
+\subsection*{Task.java}
+\inputmintedframed{java}{Task.java}
+
+\subsection*{RealTimeScheduler.java}
+\inputmintedframed{java}{RealTimeScheduler.java}
+	
+\end{document}

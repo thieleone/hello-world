@@ -1,0 +1,130 @@
+\documentclass[numbers=noendperiod]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{enumerate}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 1. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Mi 10:00-12:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+\section*{1. Aufgabe}
+\begin{enumerate}[a)]
+	\item \textbf{Was ist Datenparalleliät?} Datenparallelität oder DLP (Data-Level-Parallelism) ist ein Parallelitätskonzept, bei dem die Parallelisierung dadurch erreicht wird, dass eine bestimmte Operation $f$ gleichzeitig auf mehreren Untereinheiten $d_1,d_2,...$ eines Datensatzes $d$ durchgeführt wird.
+	\item \textbf{Was ist Funktionsparallelität?} Bei Funktionsparallelität oder TLP (Task-Level-Parallelism) wird anders als bei DLP die Parallelität dadurch erreicht, dass mehrere unterschiedliche Operationen $f_1,f_2,...$ auf einem Datensatz durchgeführt werden.
+\end{enumerate}
+
+\section*{2. Aufgabe}
+Gemäß Vorlesung ist ein Prozess ein "Programm in Ausführung mit zusätzlicher Kontextinformation". Die Verwaltung von Prozessen erfolgt dabei durch das Betriebssystem, welches jedem Prozess einen eigenen Adressraum zuweist. Ein Thread ist ein Programmfaden, welcher innerhalb eines Prozesses läuft. Innerhalb eines Prozesses können mehrere Threads existieren, die sich einen gemeinsamen Speicherbereich teilen und zusätzlich jeweils einen eigenen lokalen Speicherbereich haben können; entscheidend ist aber, dass diese Speicherbereiche alle innerhalb des Speicherbereichs des übergeordneten Prozesses liegen. Oftmals wird die Verwaltung der Threads nicht vom Betriebssystem, sondern direkt von dem übergeordneten Prozess übernommen. 
+
+Offenbar folgt aus der Definition, dass in jedem Prozess mindestens ein Thread läuft.
+
+\section*{Aufgabe 3}
+\begin{enumerate}[a)]
+	\item Ein Algorithmus ist \textbf{determiniert}, wenn eine Eingabe jedes Mal zum gleichen Ergebnis führt.
+	\item Ein Algorithmus heißt \textbf{deterministisch}, wenn für jeden Zustand, der während der Ausführung des des Algorithmus auftreten kann, der Nachfolgezustand eindeutig definiert ist.
+	\item Offenbar ist jeder deterministische Algorithmus determiniert, denn mit Eindeutigkeit des Nachfolgezustands des Anfangszustands (Eingabe mit einbegriffen) beginnend folgt induktiv unter Verwendung der Eigenschaft des Determinismus, dass alle Zustände in der Ausführung des Algorithmus eindeutig durch den Eingabezustand definiert sind, und damit insbesondere auch der Endzustand und die Ausgabe.
+	\item Umgekehrt ist nicht jeder determinierte Algorithmus auch deterministisch, denn die Ausgabe eines Algorithmus kann für eine bestimmte Eingabe zufällig sein selbst wenn in der Ausführung des Algorithmus die Zustandsabfolge nicht eindeutig definiert ist. Ein Beispiel für einen determinierten, aber nicht deterministischen Algorithmus ist Quicksort. Die Ausführung des Algorithmus ist nicht eindeutig, da die Trennung der Listen von der zufälligen Wahl des Pivotelements abhängt, das Endergebnis ist aber stets die sortierte Eingabeliste; das Ergebnis ist also determiniert.
+\end{enumerate}
+
+\section*{Aufgabe 4}
+
+Eine nebenläufige, asynchrone Ausführung von Prozessen führt nicht notwendigerweise zu nicht deterministischen Prozessen, wenn die Prozesse unabhängig sind. Nehmen wir zum Beispiel einen einfachen Fall zweier nebenläufiger Prozesse $P_1$ und $P_2$ an und sei die Execution Policy des Task Schedulers beispielsweise diejenige, immer abwechselnd einen Maschinenbefehl von $P_1$ und $P_2$ abzuarbeiten. Eine derartige Ausführung wäre zwar wegen ständiger Kontextwechsel sehr ineffizient, aber vollkommen deterministisch. In realen Computern trifft man diesen Fall aber eher nicht an.
+
+\section*{Aufgabe 5}
+\begin{enumerate}[a)]
+	\item Es gibt insgesamt 10 mögliche Ergebnisse, nämlich (0,0,0), (0,0,1), (0,2,1), (0,2,2), (1,1,1), (1,1,2), (1,2,1), (1,2,3), (2,2,1), (2,2,4). Diese treten für die 20 verschiedenen verschachtelten Ausführungen des Programmes auf:
+	
+	\begin{tabular}{|c|c|}
+		\hline Verschachtelung $P$ & Endergebnis $(x,y,z)$\\\hline
+		$(p_1, p_2, p_3, r_1, r_2, r_3)$ & (1,1,2)\\
+		$(p_1, p_2, r_1, p_3, r_2, r_3)$ & (2,2,4)\\
+		$(p_1, p_2, r_1, r_2, p_3, 3_3)$ & (2,2,4)\\
+		$(p_1, p_2, r_1, r_2, r_3, p_3)$ & (2,2,1)\\
+		$(p_1, r_1, p_2, p_3, r_2, r_3)$ & (0,0,0)\\
+		$(p_1, r_1, p_2, r_2, p_3, r_3)$ & (0,0,0)\\
+		$(p_1 ,r_1, p_2, r_2, r_3, p_3)$ & (0,0,1)\\
+		$(p_1, r_1, r_2, p_2, p_3, r_3)$ & (0,2,2)\\
+		$(p_1, r_1, r_2, p_2, r_3, p_3)$ & (0,2,1)\\
+		$(p_1, r_1, r_2, r_3, p_2, p_3)$ & (1,1,2)\\\hline
+	\end{tabular}
+	\begin{tabular}{|c|c|}
+		\hline Verschachtelung $P$ & Endergebnis $(x,y,z)$\\\hline
+		$(r_1, p_1, p_2, p_3, r_2, r_3)$ & (1,1,2)\\
+		$(r_1, p_1, p_2, r_2, p_3, r_3)$ & (1,1,1)\\
+		$(r_1, p_1, p_2, r_2, r_3, p_3)$ & (1,2,1)\\
+		$(r_1, p_1, r_2, p_2, p_3, r_3)$ & (1,2,1)\\
+		$(r_1, p_1, r_2, p_2, r_3, p_3)$ & (1,2,3)\\
+		$(r_1, p_1, r_2, r_3, p_2, p_3)$ & (1,2,1)\\
+		$(r_1, r_2, p_1, p_2, p_3, r_3)$ & (1,2,3)\\
+		$(r_1, r_2, p_1, p_2, r_3, p_3)$ & (1,2,1)\\
+		$(r_1, r_2, p_1, r_3, p_2, p_3)$ & (1,2,1)\\
+		$(r_1, r_2, r_3, p_1, p_2, p_3)$ & (1,2,1)\\\hline
+	\end{tabular}
+	
+	\item Die Reihenfolge der ersten drei Prozesse ist festgelegt, sodass man die Kombinationen zur Verzahnung durch Ziehen ohne Zurücklegen modellieren kann. Für Prozesse $P_1, P_2, ..., P_n$, wobei der $i$-te Prozess $n_i$ Befehle hat gilt die in der Vorlesung behandelte allgemeine Formel:
+	\begin{equation}
+		N = \frac{\left(\sum_{i=1}^{n}\right)!}{\prod_{i=1}^{n}n_i!}
+	\end{equation}
+	Für den betrachteten Fall gilt $n=2$ mit $n_1 = n_2 = 3$, also gibt es $N = \frac{6!}{3!\cdot 3!} = 20$ Möglichkeiten zur Verzahnung der Prozesse.
+\end{enumerate}
+
+\section*{Aufgabe 6}
+\begin{enumerate}[a)]
+	\item Es ist kaum möglich, im Vorhinein zu bestimmen, welcher Prozess als erster fertig ist, da das an zu viele Unbekannte gebunden ist. Das hängt zum Beispiel davon ab, welchen Wert die Variable \textit{Share.COUNTER} zum Zeitpunkt des Aufrufs der Run-Methoden hat und ob die Run-Methoden direkt hintereinander aufgerufen werden, oder ob dazwischen noch weitere Operationen im main-Thread stattfinden. Für den trivialen Fall, dass \textit{Share.COUNTER} bei Aufruf der Run-Methoden (direkt hintereinander) schon auf einen Wert $\ge$8 gesetzt ist, wird die erste Schleife garantiert als erste beendet wenn Thread 1 als erster gestartet wird; ist der Wert der Variable zu Beginn $\le$ -7 und wird Thread 2 als erstes gestartet, so wird die zweite Schleife garantiert als erste beendet, für alle anderen Werte ist das ohne weitere Information nicht klar.
+	
+	\item Tatsächlich ist überhaupt nicht klar, dass beide Threads die Ausführung der run-Methode beenden. Nehmen wir an, \textit{Share.COUNTER} ist zu Beginn 0 und die run-Methoden für Thread 1 und 2 werden direkt hintereinander in \textit{main()} aufgerufen. Dann könnte es passieren, dass beide Run-Methoden in den Schleifen hängen bleiben, wenn Thread 1 und Thread 2 abwechselnd \textit{Share.COUNTER} erhöhen, bzw. erniedrigen, sodass die Schleifenbedingungen \textit{Share.COUNTER} < 8 und \textit{Share.COUNTER} > -7 stets zu \textit{True} ausgewertet werden.
+\end{enumerate}
+
+\section*{Aufgabe 7}
+
+\inputmintedframed{java}{Nap.java}
+
+\inputmintedframed{java}{Gambler.java}
+
+\section*{Aufgabe 8}
+
+Sei eine Eingabe $(e_1,e_2,...,e_n)$ gegeben, welche an eine Funktion $f$ übergeben wird. Für den Fall, dass $n$ eine gerade Zahl ist, startet $f$ $\frac{n}{2}$ Prozesse $P_1, P_2, ... , P_\frac{n}{2}$, wobei der Prozess $P_i$ die Berechnung $a_i = e_{2i-1} + e_{2i}$ durchführt, sodass die Funktion am Ende das Tupel $(a_1,a_2,...,a_\frac{n}{2})$ zurückgibt. Für ein ungerades $n$ wird die Eingabe in $(e_1,e_2,...,e_{n-1})$ und $e_(n)$ aufgeteilt und $\frac{n-1}{2}$ Prozesse $P_1, P_2, ... P_\frac{n-1}{2}$ gestartet, welche die oben spezifizierte Berechnung durchführen. In diesem Fall wird das Tupel $(a_1,a_2,...,a_\frac{n-1}{2},e_n)$ zurückgegeben.
+
+Wird $f$ rekursiv mit den jeweiligen aufgerufen, bis die Ausgabe ein eindimensionaler Tupel ist; dann ist dieses gerade die gewünschte Summe.
+
+\begin{enumerate}
+	\item Da die Addition eine zweistellige Operation ist, können nicht mehr als $\lfloor \frac{n}{2} \rfloor$ Summenoperationen parallelisiert werden. Entsprechend können maximal $\lfloor \frac{n}{2} \rfloor$ Prozesse gleichzeitig gestartet werden.
+	\item Da die Rekursionstiefe $\lceil \log(n) \rceil$ beträgt und wir idealerweise annnehmen, dass alle Prozesse während einer Rekursion jeweils eine Rechenoperation nebenläufig durchführen, können wir für die Zeitkomplexität $T(n) \in \mathcal{O}(\log(n))$ ansetzen.
+\end{enumerate}
+
+
+
+\end{document}

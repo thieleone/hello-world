@@ -1,0 +1,262 @@
+\documentclass[numbers=noendperiod]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage[kpsewhich]{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{color}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 6. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Fr 12:00-14:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+\section*{1. Aufgabe}
+
+Um die Korrektheit der Guards der \textit{await}-Anweisung zu beweisen zeigen wir, dass die schwächste Vorbedingung für die Ausführung von $inF \gets inF +1$ mit Nachbedingung der Invarianten $SCI$ gerade die Bedingung der \textit{await}-Anweisung und die Invariante $SCI$ sind.
+
+\begin{align}
+	wp(inD \gets inD +1, SCI) \equiv & wp(inD \gets inD + 1, (inD \le afterF + 1) \land (inF \le afterD))\\
+	&\equiv (inD \le afterF + 1) \land (inF \le afterD)[inD \backslash inD +1]\\
+	&\equiv (inD +1 \le after F +1) \land (inF \le afterD)\\
+	&\equiv (inD \le afterF) \land (inF \le afterD)\\
+	&\equiv (inD \le afterF + 1) \land (inF \le afterD) \land (inD \le afterF)\\
+	& SCI \land (inD \le afterF)
+\end{align}
+
+Für den Guard der zweiten \textit{await}-Anweisung verfahren wir analog:
+
+\begin{align}
+	wp(inF \gets inF + 1, SCI) \equiv &wp(inF \gets inF +1, (inD \le afterF +1 ) \land (inF \le afterD))\\
+	&\equiv (inD \le afterF + 1) \land (inF \le afterD) [inF \backslash \gets inF + 1]\\
+	&\equiv (inD \le afterF + 1) \land (inF +1 \le afterD)\\
+	&\overset{inF \in \mathbb{N}}{\equiv} (inD \le afterF+1) \land (inF < afterD)\\
+	&\equiv (inD \le afterF + 1) \land (inF \le afterD) \land (inF < afterD)\\\
+	&\equiv SCI \land (inF < afterD)
+\end{align}
+
+\section*{Aufgabe 2}
+
+Wir modifizieren zunächst die Klassen \textit{Writer} und \textit{Reader} derart, dass sie Ausgaben auf der Kommandozeile produzieren, um die Richtigkeit unserer Programme überprüfen zu können. Außerdem legen sich die Programme mithilfe der \textit{randomNap}-Methode der \textit{Nap}-Klasse regelmäßig schlafen.
+
+\inputmintedframed{java}{Reader.java}
+
+\inputmintedframed{java}{Writer.java}
+
+Die Klassen \textit{DatabaseSemaphore} und \textit{DatabaseMonitor} implementieren jeweils die Schnittstelle \textit{ReadWriteLock} und verfügt über eine \textit{main}-Funktion, in der zwei Writer-Threads sowie vier Reader-Threads initialisiert und gestartet werden.
+
+Bei der Semaphoren-Variante lösen wir das Problem, indem wir eine zusätzlich Semaphore \textit{writerWaiting} einführen, die beim akquirieren des ReadLocks und des WriteLocks akquiriert wird und zusätzlich wird eine FIFO-Reihenfolge der Semaphoren \textit{database} und \textit{writerWaiting} vorgeschrieben.
+
+\inputmintedframed{java}{DatabaseSemaphore.java}
+
+Bei der Monitor-Variante lösen wir das Problem, indem wir einen int \textit{writerWaiting}, welcher zählt, wieviele Prozesse darauf warten, zu schreiben und verhindert, dass neue Prozesse, die schreiben möchten, den ReadLock akquirieren, wenn es schon wartende Schreiber gibt. Allerdings kann es hier zu einem Aushungern der Leser kommen, und zwar wenn jedes Mal nach Beenden eines Schreibvorgangs schon der nächste Schreiber wartet.
+
+\inputmintedframed{java}{DatabaseMonitor.java}
+
+\section*{Aufgabe 3}
+
+Bei $n = 5$ Prozessen und $m = 4$ Ressourcentypen ist der Ressourcevektor $E = (3,15,12,11)$ sowie die Belegungsmatrix
+\begin{equation}
+	C = \begin{pmatrix}
+	0 & 0 & 1 & 1\\
+	1 & 1 & 0 & 0\\
+	1 & 3 & 5 & 4\\
+	0 & 6 & 3 & 2\\
+	0 & 0 & 1 & 4
+	\end{pmatrix}
+\end{equation}
+
+\begin{enumerate}[a)]
+	\item Wir bestimmen zunächst den Restressourcenvektor $A$. Es gilt:
+	
+	\begin{equation}
+		\sum_{i=1}^{n} C_{ij} + A_j = E_j \quad \Rightarrow \quad A_j = E_j - \sum_{i=1}^{n} C_{ij}
+	\end{equation}
+	Somit bestimmen wir:
+	\begin{equation}
+		\begin{matrix}
+		A_1 = 3 - (0+1+1+0+0) = 1\\
+		A_2 = 15 - (0+1+3+6+0) = 5\\
+		A_3 = 12 - (1+0+5+3+1) = 2\\
+		A_4 = 11 - (1+0+4+2+4) = 0
+		\end{matrix}
+		\quad \Rightarrow \quad A = (1,5,2,0)
+	\end{equation}
+	
+	\item Wir betrachten die Ressourcenanforderungsmatrix:
+	\begin{equation}
+		R = \begin{pmatrix}
+		0 & 0 & 0 & 1\\
+		0 & 6 & 5 & 0\\
+		1 & 0 & 0 & 1\\
+		0 & 0 & 2 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix}
+	\end{equation}
+	
+	Um zu überprüfen, ob sich das System in einem sicheren Zustand befindet, wenden wir den Algorithmus aus der Vorlesung an:
+	\begin{align}
+		&R = \begin{pmatrix}
+		0 & 0 & 0 & 1\\
+		0 & 6 & 5 & 0\\
+		1 & 0 & 0 & 1\\
+		0 & 0 & 0 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix},\quad C = \begin{pmatrix}
+		0 & 0 & 1 & 1\\
+		1 & 1 & 0 & 0\\
+		1 & 3 & 5 & 4\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 1 & 4
+		\end{pmatrix}, \quad A = (1,11,5,2)\\
+		&R = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 6 & 5 & 0\\
+		1 & 0 & 0 & 1\\
+		0 & 0 & 0 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix},\quad C = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		1 & 1 & 0 & 0\\
+		1 & 3 & 5 & 4\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 1 & 4
+		\end{pmatrix}, \quad A = (1,11,6,3)\\
+		&R = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		1 & 0 & 0 & 1\\
+		0 & 0 & 0 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix},\quad C = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		1 & 3 & 5 & 4\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 1 & 4
+		\end{pmatrix}, \quad A = (2,12,6,3)
+	\end{align}
+	\begin{align}
+		&R = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix},\quad C = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 1 & 4
+		\end{pmatrix}, \quad A = (3,15,11,7)\\\
+		&R = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0
+		\end{pmatrix},\quad C = \begin{pmatrix}
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 0 & 0
+		\end{pmatrix}, \quad A = (3,15,12,11)
+	\end{align}
+	Da in jedem Schritt ein Prozess gefunden wird, an den die Ressourcen vergeben werden können (bzw. eine Zeile $C_i$, sodass $\forall j: C_{ij} \le A_j$), terminiert der Algorithmus erfolgreich und wir befinden uns in einem sicheren Zustand.
+	
+	\item Angenommen, wir können eine Teilanforderung $(0,3,2,0)$ von $T_2$ bedienen. Dann muss der obige Algorithmus für die entsprechende Ressourcenvergabe ebenfalls erfolgreich terminieren:
+	\begin{align}
+		R = \begin{pmatrix}
+		0 & 0 & 0 & 1\\
+		0 & 3 & 3 & 0\\
+		1 & 0 & 0 & 1\\
+		0 & 0 & 2 & 0\\
+		0 & 6 & 4 & 2
+		\end{pmatrix}, \quad
+		C = \begin{pmatrix}
+		0 & 0 & 1 & 1\\
+		1 & 4 & 3 & 0\\
+		1 & 3 & 5 & 4\\
+		0 & 0 & 0 & 0\\
+		0 & 0 & 1 & 4
+		\end{pmatrix},\quad A = (1,2,0,0)
+	\end{align}
+	Wie man sieht, können im Schritt nach Vergabe dieser Ressourcen aber die Anforderungen keines weiteren Threads mehr bedient werden, womit sich ein Deadlock ergeben würde. Der Zustand ist somit nicht sicher und die Vergabe der Ressourcen sollte nicht bewilligt werden.
+\end{enumerate}
+
+\section*{Aufgabe 4}
+
+\begin{enumerate}[a)]
+	\item Wurde importiert.
+	\item Bei jedem Schritt wird der Reihe nach überprüft, dass die Anzahl der Requests eines Threads nicht die Anzahl der freien Ressourcen überschreitet. Ist das nicht der Fall, wird dem Request mittels \textit{req.grant()} stattgegeben. Wird die Anzahl der freien Ressourcen doch überschritten, wird der Request nicht gewährt.
+	
+	Der Algorithmus gewährt das Abarbeiten aller Prozesse unter der Bedingung, dass die Requests in einer Reihenfolge eintreffen, sodass sich nach deren Abarbeitung das System immer noch in einem sicheren Zustand befindet. Der Algorithmus kann aber nicht aktiv dem Zustandekommen eines unsicheren Zustands vorbeugen. 
+	\item \begin{enumerate}[(i)]
+	\item Es wird eine (relative) FIFO-Warteschlange eingerichtet. In jedem Schritt wird zunächst der erste Prozess der Queue gelöscht sofern dieser schon abgearbeitet ist. Anschließend wird für jeden aktiven Request überprüft ob der zugehörige Prozess schon in der Warteschlange ist. Falls nicht, wirden dieser in die Queue eingereiht. Schließlich wird überprüft, ob der Prozess vom Request mit dem 1.ten oder dem 2.ten Request der Queue übereinstimmt und ob genug freie Ressourcen übrig sind. Falls ja, wir der Request abgearbeitet, sonst nicht.
+
+	Sofern nicht irgendwann ein Deadlock zwischen den ersten 2 Prozessen in der Queue zustande kommt, werden die ersten zwei Prozesse in der Queue immer irgendwann abgearbeitet. Da die nachfolgenden Prozesse in der Queue nachrücken, folgt induktiv sofort, dass alle Prozesse irgendwann drankommen und abgearbeitet werden, sofern kein Deadlock zwischen den zu einem beliebigen Zeitpunkt zwei ersten Prozessen zustandekommt.
+	
+	Ein solcher Deadlock kann zustandekommen, wenn beide Prozesse mehr Ressourcen anfragen, als vorhanden sind, oder wenn beide Prozesse abwechselnd Ressourcen erfragen und dabei in einem nicht-sicheren Zustand landen. Nehmen wir zum Beispiel an, dass zwei Ressourcenklassen \textcolor{red}{ROT} (4) und \textcolor{blue}{BLAU} (3) existieren. Dann führen folgende Ressourcenanfragen zu einem Deadlock:
+	\begin{enumerate}[1.]
+		\item $P_1$ fragt 2 Ressourcen von \textcolor{blue}{BLAU} an $\to$ grant
+		\item $P_2$ fragt 3 Ressourcen von \textcolor{red}{ROT} an $\to$ grant
+		\item $P_1$ fragt 2 Ressourcen von \textcolor{red}{ROT} an $\to$ reject
+		\item $P_2$ fragt 2 Ressourcen von \textcolor{blue}{BLAU} an $\to$ reject
+	\end{enumerate}
+
+	Offenbar können Prozesse 1 und 2 nicht mehr befriedigt werden, nachfolgende Prozesse allerdings auch nicht, da diese darauf warten, dass 1 oder 2 befriedigt werden, um nachzurücken.
+	
+	\item Um zu verhindern, dass ein Deadlock zwischen den ersten zwei Prozessen auftritt, kann jedes Mal überprüft werden, ob die Abarbeitung der Anfragen der zwei ersten Prozesse zu einem sicheren Zustand führt und die Vergabe der Ressourcen nur für einen sicheren Zustand bewilligt.
+	
+	\item Eine Überprüfung sicherer Zustände kann zum Beispiel so erfolgen:
+	\inputmintedframed{java}{SafetyAlgo.java}
+	
+	Mit den entsprechenden Modifikationen an \textit{ExampleAlgo2.java}, um das Ergebnis der Überprüfung auszugeben:
+	\inputmintedframed{java}{ExampleAlgo2.java}
+	
+	\end{enumerate}
+	
+	\item ${}$\\
+	
+	\inputmintedframed{java}{BankersAlgo.java}
+	
+	Sofern eine Reihenfolge für die Vergabe der Ressourcen existiert, die nicht zum Deadlock führt, wird diese vom Bankiersalgorithmus gefunden und durchgeführt. Die Abarbeitung der Prozesse ist somit gewährleistet, sofern deren Anfragen nicht zwangsweise zum Deadlock führen.
+\end{enumerate}
+
+	
+\end{document}

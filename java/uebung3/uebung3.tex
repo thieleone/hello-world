@@ -1,0 +1,186 @@
+\documentclass[numbers=noendperiod]{scrartcl}
+%Font encoding packages:
+\usepackage[utf8]{luainputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=0.75in, bottom=1in]{geometry}
+%Extension packages:
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{minted}
+\usepackage{courier}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{enumerate}
+
+\begin{document}
+	
+\definecolor{bg}{RGB}{230,230,230}
+	
+\hrulefill
+\begin{center}
+	\bfseries % Fettdruck einschalten
+	\sffamily % Serifenlose Schrift
+	\begin{huge}
+		ALPIV: Nichtsequentielle und verteilte Programmierung
+	\end{huge}\\
+	\begin{Large}
+		Sommersemester 2017, 3. Übungsblatt
+	\end{Large}\\
+	\begin{small}
+		Philipp Thiele, Luis Herrmann; Tutor: Alexander Kauer; Mi 14:00-16:00
+	\end{small}
+	
+	\vspace{-10pt}
+\end{center}
+\hrulefill
+
+\definecolor{bg}{RGB}{230,230,230}
+\newcommand{\inputmintedframed}[2]{
+	\begin{mdframed}[linecolor=bg,backgroundcolor=bg]
+		\inputminted[mathescape,breaklines,linenos,numbersep=5pt,tabsize=3]{#1}{#2}
+\end{mdframed}}
+
+\section*{1. Aufgabe}
+
+Zu zeigen oder widerlegen: $ \Diamond \Box A \leftrightarrow \Box \Diamond A$. Wir führen zunächst die Ausdrücke in Quantorensprache aus:
+\begin{enumerate}
+	\item $\Diamond (\Box A) \leftrightarrow \exists j \ge i: \Box A $ wahr in $S_j$ $\leftrightarrow \exists j \ge i \forall k \ge j : A $ wahr in $S_k$.
+	
+	\item $\Box (\Diamond A) \leftrightarrow \forall j \ge i : \Diamond A$ wahr in $S_j$ $\leftrightarrow \forall j \ge i \exists k \ge j : A$ wahr in $S_k$.
+\end{enumerate}
+
+
+Offenbar sind die Ausdrücke nicht äquivalent. Als Gegenbeispiel betrachten wir eine Zustandsfolge $(S_i)_{i\in \mathbb{N}}$, wobei $A(S_i) = true$ für gerades $i$ und $A(S_i) = false$ für ungerades $i$. Offenbar gilt in einem beliebigen $S_i$ dieser Zustandsabfolge die zweite Aussage, denn egal, wie groß unser $j \ge i$ ist, wir finden immer einen Zustand $S_k$ mit $k \ge j$, sodass A wahr wird. 
+Die erste Aussage gilt dagegen nicht, denn wir finden kein $j \ge i$ sodass für alle $S_k$ mit $k \ge j$ $A(S_k)$ wahr ist. Auf jeden Zustand $S_k$, in dem $A(S_k)$ wahr ist folgt ein Zustand $S_k'$, in dem $A(S_k)$ nicht gilt.
+
+\section*{2. Aufgabe}
+
+Zu zeigen: $\Box A \Rightarrow \Diamond B $ und $\Diamond \Box A$ impliziert $\Diamond B$.
+
+Es gelte $\Box A \Rightarrow \Diamond B $. D.h. wenn eine Aussage $A$ in einem Zustand $S_i$ immer wahr ist, folgt daraus, dass irgendwann $B$ eintritt. Oder formaler:
+\begin{equation}
+	\forall j \ge i : A \equiv true \text{ in } S_j \Rightarrow \exists j'\ge i : B \equiv true \text{ in } S_{j'}
+\end{equation}
+
+Es ist wichtig zu beachten, dass der Referenzzustand $S_i$ variabel ist, was für den Rest der Argumentationsstruktur auch wichtig ist. Denn nun gelte außerdem $\Diamond \Box A$, d.h. $\exists k \ge i \forall l \ge j : A \equiv true \text{ in } S_l$. Dann können wir also einen Referenzzustand $S_k$ angeben, von dem an immer $A$ gilt. Also muss die Implikation gelten und es muss irgendwann für einen späteren Zustand als $S_k$ Aussage $B$ wahr sein. Formaler:
+\begin{align}
+	&  \forall j \ge i : A \equiv true \text{ in } S_j \Rightarrow \exists j'\ge i : B \equiv true \text{ in } S_{j'} \text{ und } \exists k \ge i \forall l \ge k : A \equiv true \text{ in } S_l\\
+	&  \text{ impliziert } \exists j' \ge k: B \equiv true
+\end{align}
+
+\section*{3. Aufgabe}
+
+\begin{enumerate}
+	\item Zu zeigen: $(\Box A \land \Box B) \leftrightarrow \Box( A \land B)$ in $S_i$. 
+	
+	Beweis: 
+	\begin{align}
+		(\Box A \land \Box B) &\leftrightarrow \forall j_A,j_B \ge i: A \equiv true \text{ in } S_{j_A} \land B \equiv true \text{ in } S_{j_B}\\
+		& \leftrightarrow \forall j \ge i : (A \equiv true \text{ in } S_j) \land (B \equiv true \text{ in } S_j)\\
+		& \leftrightarrow \forall j  \ge i : (A \equiv true \land B \equiv true) \text{ in } S_j\\
+		& \leftrightarrow \Box (A\land B)
+	\end{align}
+	
+	\item Zu zeigen: $(\Diamond A \lor \Diamond B) \leftrightarrow \Diamond (A \lor B)$.
+	
+	Beweis:
+	\begin{align}
+		(\Diamond A \lor \Diamond B) &\leftrightarrow (\exists j_A \ge i : A \equiv true \text{ in } S_{j_A}) \lor (\exists j_B \ge i : B \equiv true \text{ in } S_{j_B})\\
+		&\leftrightarrow \exists j_A,j_B,j \ge i: (A \equiv true \text{ in } S_j) \lor (B \equiv true \text{ in } S_j) \land (j = j_A \lor j = j_B)\\
+		&\leftrightarrow \exists j \ge i : A \equiv true \lor B \equiv true \text{ in } S_j\\
+		&\leftrightarrow \Diamond (A \lor B)
+	\end{align}
+
+\end{enumerate}
+		
+\section*{4. Aufgabe}
+
+Wir setzen folgende Invarianten voraus, die wir bereits auf dem letzten Übungszettel beweisen haben:
+\begin{align}
+	&(p_4 \land r_5) \rightarrow (\text{ready}[1] \land \text{turn} = 1)
+	&&(p_5 \land r_4) \rightarrow (\text{ready}[0] \land \text{turn} = 0)
+\end{align}
+
+Damit beweisen wir nun:
+\begin{enumerate}[1.]
+	\item $(p_4 \land \Box \lnot p_5) \rightarrow \Box \Diamond (\text{ready}[1] \land \text{turn} = 1)$
+	
+	Wir halten zunächst fest: Wenn der aktuelle Zustand von $T_p$ $p_4$ ist und nie der Zustand $p_5$ erreicht wird heißt das, dass $T_p$ immer in $p_r$ verharrt, also $p_4 \land \Box \lnot p_5 \leftrightarrow \Box p_4$.
+	
+	Da wir aber schwache Fairness des Schedulers voraussetzen wird immer irgendwann die aktuelle Zeilen in $T_p$ ausgeführt. Wenn $T_p$ in $p_4$ verbleibt, dann also, weil die \textit{await}-Bedingung in $p_4$ zu $false$ evauliert wird. Es gilt also:
+	\begin{align}
+		(p_4 \land \Box \lnot p_5) \leftrightarrow \Box p_4 \rightarrow \Box \Diamond \lnot (\text{ready} [1] = false \lor \text{turn = 0}) \rightarrow \Box \Diamond (\text{ready}[1] \land \text{turn} = 1)
+	\end{align}
+
+	\item $\Diamond \Box (\lnot \text{ready}[1]) \lor \Diamond (\text{turn} = 0)$
+	
+	Wir beweisen das per Widerspruchsbeweis. Angenommen, das Gegenteil wäre wahr:
+	\begin{align}
+		\lnot (\Diamond \Box (\lnot \text{ready}[1]) \lor \Diamond (\text{turn} = 0) &\leftrightarrow \lnot \Diamond \Box (\lnot \text{ready}[1]) \land \lnot \Diamond (\text{turn} = 0)\\
+		& \leftrightarrow \Box \lnot \Box  (\lnot \text{ready}[1]) \land \Box \lnot (turn = 0)\\
+		& \leftrightarrow \Box \Diamond \text{ready}[1] \land \Box \lnot (\text{turn = 0})
+	\end{align}
+	Nun gilt aber $\Box \Diamond \text{ready}[1] \rightarrow \Box \Diamond r_3 \rightarrow \Box \Diamond r_4 \rightarrow \Box \Diamond (\text{turn} = 0)$ im Widerspruch zu $\Box \lnot (\text{turn = 0})$ und wir sind fertig.
+	
+	\item $p_4 \land \Box \lnot p_5 \land \Diamond (\text{turn} = 0) \rightarrow \Diamond \Box (\text{turn} = 0)$
+	
+	Offenbar gilt wieder $p_4 \land \Box \lnot p_5 \leftrightarrow \Box p_4$. Betrachten wir den Thread $T_r$. Da der zewite Thread nur eine \textit{await}-Instruktion hat, kann der Thread nur an einer Stelle hängen bleiben, aber schreitet sonst voran. Dementsprechend gibt es zwei Fälle zu unterscheiden:
+	
+	\begin{enumerate}[1.]
+		\item[1.Fall] $\Diamond \Box r_4$
+		
+		D.h. irgendwann schreitet der zweite Thread auch nicht voran und da keine Variablen mehr verändert werden können folgt dann $\rightarrow \Diamond \Box \lnot (\lnot \text{ready} [0] \lor \text{turn} = 1) \rightarrow \Diamond \Box (\text{ready}[0] \land \text{turn = 0}) \rightarrow \Diamond \Box \text{turn = 0}$
+		
+		\item[2.Fall] $\Box \Diamond r_5$
+		
+		D.h. der zweite Thread bleibt nie hängen. $\Box \Diamond r_5 \rightarrow \Box \Diamond (\lnot \text{ready}[0] \lor \text{turn} = 1)$. Da $\text{ready}[0]$ nur in $p_2$ und $p_6$ manipuliert wird, gilt $\Box p_4 \rightarrow \Box \text{ready}[0]$ im Widerspruch zu $\Box \Diamond \lnot \text{ready}[0]$, also muss stattdessen $\Box \Diamond \text{turn} = 1$.
+		
+		Nun gilt aber:
+		\begin{align}
+			 \Box \Diamond (\text{turn} = 1) \land \Box \Diamond r_5 &\rightarrow \Box \Diamond (\text{turn} = 1) \land \Box \Diamond r_3 \rightarrow \Box \Diamond (\text{turn} = 1) \land \Box \Diamond (\text{turn} = 0)\\
+			 &\rightarrow \Box \Diamond p_3
+		\end{align}
+		Das steht aber im Widerspruch zu $\Box p_4$. Also kann dieser Fall nicht eintreten und wir sind fertig.
+	\end{enumerate}
+
+\end{enumerate}
+
+\section*{5. Aufgabe}
+
+Die Prozesse verhungern genau dann, wenn $\Diamond \Box p_4 \lor \Diamond \Box r_4$.\\
+
+Wir zeigen zunächst, dass $\Diamond \Box p_4$ nicht wahr sein kann. Nehmen wir an, dass wäre der Fall. Nach 4.2 gilt die Invariante, dass $\Diamond \Box (\lnot \text{ready}[1]) \lor \Diamond (\text{turn} = 0)$. 
+\begin{enumerate}
+	\item[1. Fall] $\Diamond (\text{turn} = 0)$.
+	
+	Mit 4.3. folgt $\Box p_4 \land \Diamond (\text{turn} = 0) \rightarrow \Diamond \Box (\text{turn} = 0)$. Das steht aber im Widerspruch zu 4.1, wonach $\Box p_4 \rightarrow \Box \Diamond (\text{ready}[1] \land \text{turn} = 1) \rightarrow \Box \Diamond \text{turn} = 1$.
+	
+	\item[2. Fall] $\Diamond\Box (\lnot \text{ready}[1])$.
+	
+	Offenbar steht $\Diamond \Box (\lnot \text{ready}[1]) \leftrightarrow \Diamond \lnot \Diamond \text{ready}[1] \leftrightarrow \lnot \Box \Diamond \text{ready}[1]$ im Widerspruch zu 4.1 wonach $\Box p_4 \rightarrow \Box \Diamond (\text{ready}[1] \land \text{turn} = 1) \rightarrow \Box \Diamond \text{ready}[1]$.
+\end{enumerate}
+
+Damit haben wir gezeigt, dass das Verhungern von $T_p$ im Widerspruch zu den Invarianten von Aufgabe 4 steht und sind fertig. Für das Verhungern von $T_r$ ist der Beweis genau symmetrisch.
+
+\section*{6. Aufgabe}
+
+Es kann eine Zustandsabfolge konstruiert werden, sodass der Zustand $(p_5,r_5)$ erreicht wird. Nehmen wir an, wir starten in $(r_2,p_2)$. Dann führt folgende Zustandsabfolge zu $(p_5,r_r)$:
+
+\begin{table}[h]
+	\begin{tabular}{c|c|c|c}
+		ausgeführt & Zustand & Variablen & Anmerkung\\\hline
+		$r_2$ & $(p_2,r_3)$ & $\text{temp} = 0$, $\text{ticket}_p = 0$, $\text{ticket}_r = 0$ &\\
+		$p_2$ & $(p_3,r_3)$ & $\text{temp} = 0$, $\text{ticket}_p = 0$, $\text{ticket}_r = 0$ &\\
+		$r_3$ & $(p_3,r_4)$ & $\text{temp} = 0$, $\text{ticket}_p = 0$, $\text{ticket}_r = 1$ &\\
+		$r_4$ & $(p_3,r_5)$ & $\text{temp} = 0$, $\text{ticket}_p = 0$, $\text{ticket}_r = 1$ & $\text{ticket}_p = 0$ in await erfüllt \\
+		$p_3$ & $(p_4,r_5)$ & $\text{temp} = 0$, $\text{ticket}_p = 1$, $\text{ticket}_r = 1$ &\\
+		$p_4$ & $(p_5,r_5)$ & $\text{temp} = 0$, $\text{ticket}_p = 1$, $ = 1$ & $\text{ticket}_p \le \text{ticket}_r$ in await erfüllt\\
+	\end{tabular}
+\end{table}
+
+Damit ist der gegenseitige Ausschluss nicht gewährleistet.
+
+
+\end{document}
